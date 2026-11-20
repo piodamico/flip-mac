@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct FlipMacApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    // Nessuna finestra: l'interfaccia è solo il menu nella menu bar (LSUIElement).
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        Settings {
+            EmptyView()
         }
     }
 }

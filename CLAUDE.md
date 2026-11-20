@@ -29,7 +29,29 @@ Test: **non ancora disponibili.** Lo schema `FlipMac` non ha un target di test, 
 xcodebuild -project FlipMac/FlipMac.xcodeproj -scheme FlipMac -configuration Debug -destination 'platform=macOS' test
 ```
 
-Avvio: _da definire_
+Test di `FlipCore` (pacchetto Swift locale in `FlipCore/`, non ancora collegato all'app; verificati con Swift 6.4.2, 20 test superati):
+
+```sh
+swift test --package-path FlipCore
+```
+
+Avvio (dopo la build; chiudere prima eventuali istanze già aperte, per esempio quelle avviate da Xcode, altrimenti `open` riporta in primo piano quella vecchia):
+
+```sh
+open "$(xcodebuild -project FlipMac/FlipMac.xcodeproj -scheme FlipMac -configuration Debug -showBuildSettings 2>/dev/null | awk -F' = ' '/ BUILT_PRODUCTS_DIR /{print $2}')/FlipMac.app"
+```
+
+L'app vive solo nella menu bar (`LSUIElement`), senza finestra né icona nel Dock. Si chiude dal suo menu con "Esci da FlipMac".
+
+Log: `~/Library/Logs/FlipMac/flipmac.log` (righe aggiunte in coda, mai sovrascritto).
+
+### Permessi
+
+- L'App Sandbox è disattivata nel target `FlipMac`: l'hook globale non funziona in sandbox.
+- **Input Monitoring** (Privacy e sicurezza › Monitoraggio dell'input): necessario per il `CGEventTap` in sola osservazione che vede mouse e tastiera. Senza, il listener non parte.
+- **Accessibilità** (Privacy e sicurezza › Accessibilità): richiesto già ora, servirà quando la ruota dovrà intercettare Freccia giù.
+- L'app è firmata ad-hoc ("Sign to Run Locally"). Dopo una nuova build macOS può non riconoscere più i permessi concessi alla build precedente, anche se l'interruttore risulta ancora attivo: in quel caso rimuovere FlipMac dagli elenchi con "−", riaggiungerla o concedere di nuovo il permesso, poi riavviare l'app.
+- Dopo aver concesso Input Monitoring può servire uscire e riaprire l'app perché il listener parta.
 
 ## Perimetro della prima versione
 
